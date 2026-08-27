@@ -1,0 +1,10 @@
+.claude/
+
+chokepoint-project-spec.md
+
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+tfplan
+*.tfplan
