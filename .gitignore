@@ -1,6 +1,7 @@
 .claude/
 
 chokepoint-project-spec.md
+docs/diagrams/
 
 .terraform/
 *.tfstate
@@ -8,6 +9,7 @@ chokepoint-project-spec.md
 *.tfvars
 tfplan
 *.tfplan
+
 
 build/
 __pycache__/
