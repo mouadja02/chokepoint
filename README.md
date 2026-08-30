@@ -54,8 +54,10 @@ losing which one loses the start of every path. Full reference in `docs/schema.m
       evaluation.md        the three harnesses
       runbook.md           create, load, tear down, and what it costs per hour
       adr/                 14 decisions, with the reasoning attached
-    infra/      terraform: VPC, staging bucket, DynamoDB, SSM parameters
-    scripts/    daily OSV snapshot into S3
+    chokepoint/ pipeline code
+      ingestion/           stage 1: the OSV export into S3, unmodified
+    infra/      terraform: VPC, staging bucket, DynamoDB, SSM, the snapshot lambda
+    scripts/    the same snapshot by hand, for catching up a missed day
 
 `ontology.md` and `deltas.md` are the two that matter. The ADRs cover why Neptune
 Analytics and not Neptune Database, why openCypher over Gremlin and SPARQL, and why a
@@ -87,10 +89,11 @@ A few things worth knowing before you change anything:
 
 - The provider sets `allowed_account_ids`. If `AWS_PROFILE` points somewhere else the
   plan fails instead of creating resources in the wrong account.
-- `chokepoint-data-staging` predates this config and is adopted through `imports.tf`,
-  never created. It holds the snapshots, and a snapshot for a day that has already
-  passed can't be fetched back. The import block stays so a lost state file re-adopts
-  the bucket rather than trying to make a new one.
+- `chokepoint-data-staging` is created and owned by Terraform like everything else. It
+  used to be adopted through an import block instead, on the grounds that a snapshot for
+  a day that has already passed can't be fetched back -- that guard didn't survive the
+  28 August teardown, which took the bucket and its two snapshots with it. Nothing
+  protects the snapshots now except not running `terraform destroy`.
 - NAT gateway is off. Nothing runs in a private subnet yet and it's ~$32/month. The S3
   and DynamoDB gateway endpoints are free and already attached to the private route
   tables. Flip `enable_nat_gateway` when a Lambda needs egress.

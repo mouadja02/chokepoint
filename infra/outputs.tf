@@ -17,3 +17,7 @@ output "chunk_registry_table" {
 output "ingest_log_table" {
   value = module.ingest_log.table_name
 }
+
+output "snapshot_function" {
+  value = module.snapshot.function_name
+}

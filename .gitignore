@@ -8,3 +8,7 @@ chokepoint-project-spec.md
 *.tfvars
 tfplan
 *.tfplan
+
+build/
+__pycache__/
+*.pyc

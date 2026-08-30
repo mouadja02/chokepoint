@@ -92,15 +92,19 @@ reason the registry exists.
 
 ## Snapshots
 
-Already running. `scripts/init-snapshot.ps1` (Windows) or `scripts/init-snapshot.sh`. Daily,
-and the one input that can't be backfilled — a missed day is a delta that no longer exists
-anywhere.
+`chokepoint-dev-osv-snapshot`, a Lambda on an EventBridge rule at 14:00 UTC — the upstream
+export refreshes around midday. It streams `all.zip` and `modified_id.csv` into
+`osv/raw/PyPI/<UTC hour>/` without opening either one. The bucket name comes from
+`/chokepoint/dev/staging_bucket`, read once per cold start.
 
-Objects land under `osv/raw/PyPI/<UTC hour>/`. Bucket name comes from
-`/chokepoint/dev/staging_bucket`.
+`scripts/init-snapshot.ps1` (Windows) or `scripts/init-snapshot.sh` write the same keys and
+stay as the catch-up path. Within one UTC hour the keys are the same either way, so a retry
+overwrites instead of duplicating:
 
-Check weekly that snapshots are actually landing. A cron job that stopped three days ago
-looks exactly like a quiet week.
+    aws lambda invoke --function-name chokepoint-dev-osv-snapshot /dev/null
+
+Check weekly that snapshots are actually landing. A schedule that stopped three days ago
+looks exactly like a quiet week, and this is the one input that can't be backfilled.
 
 ## When something looks wrong
 
@@ -127,6 +131,8 @@ looks exactly like a quiet week.
     query times out                  unbounded variable-length pattern over a cyclic
                                      dependency graph. bound the depth.
     plan fails on the wrong account  allowed_account_ids did its job. check AWS_PROFILE.
+    snapshot lambda: stored N bytes  the download was truncated. nothing was written that
+                                     the next stage can read; invoke it again.
 
 ## Teardown at the end
 

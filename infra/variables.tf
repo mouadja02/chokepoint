@@ -40,7 +40,6 @@ variable "enable_nat_gateway" {
   default     = false
 }
 
-# Created by hand on 26 Aug and imported; see imports.tf.
 variable "staging_bucket_name" {
   description = "Name of the raw OSV snapshot bucket"
   type        = string
