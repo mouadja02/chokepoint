@@ -113,7 +113,7 @@ readability and for how you'll write every query for the next month.
 
 Rule: **subject verbs object**, active voice, and read the pattern aloud.
 
-    (:Repo)-[:DECLARES]->(:Package)              "repo declares package"
+    (:Repo)-[:DECLARES]->(:Version)              "repo declares version"
     (:Version)-[:DEPENDS_ON]->(:Version)         "version depends on version"
     (:Version)-[:AFFECTED_BY]->(:Advisory)       "version is affected by advisory"
 
@@ -282,7 +282,7 @@ C10 gives `Maintainer`. Keep it if you want a sixth label; it's the first thing 
 
 Result, six labels:
 
-    (:Repo)-[:DECLARES {direct}]->(:Package)
+    (:Repo)-[:DECLARES {direct}]->(:Version)
     (:Package)-[:HAS_VERSION]->(:Version)
     (:Version)-[:DEPENDS_ON {scope, resolved_at}]->(:Version)
     (:Version)-[:AFFECTED_BY {introduced, fixed, source_range}]->(:Advisory)
